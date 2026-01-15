@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ばぼーん！</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #bouncer {
+      position: absolute;
+      font-size: 4rem;
+      font-weight: bold;
+      white-space: nowrap;
+      color: #ff6b6b;
+      transition: color 0.1s;
+    }
+
+    #bouncer {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    @media (max-width: 768px) {
+      #bouncer {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="bouncer">ば<span id="bo">ぼ</span>ーん！</div>
+
+  <script>
+    const bouncer = document.getElementById('bouncer');
+
+    let x = Math.random() * (window.innerWidth - 200);
+    let y = Math.random() * (window.innerHeight - 100);
+
+    const isMobile = window.innerWidth <= 768;
+    let vx = isMobile ? 1.5 : 3;
+    let vy = isMobile ? 1 : 2;
+
+    const colors = [
+      '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4',
+      '#ffeaa7', '#dfe6e9', '#fd79a8', '#a29bfe',
+      '#00b894', '#e17055', '#74b9ff', '#55efc4'
+    ];
+
+    function getRandomColor() {
+      return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    function animate() {
+      const rect = bouncer.getBoundingClientRect();
+      const width = rect.width;
+      const height = rect.height;
+
+      x += vx;
+      y += vy;
+
+      let bounced = false;
+
+      if (x <= 0) {
+        x = 0;
+        vx = -vx;
+        bounced = true;
+      } else if (x + width >= window.innerWidth) {
+        x = window.innerWidth - width;
+        vx = -vx;
+        bounced = true;
+      }
+
+      if (y <= 0) {
+        y = 0;
+        vy = -vy;
+        bounced = true;
+      } else if (y + height >= window.innerHeight) {
+        y = window.innerHeight - height;
+        vy = -vy;
+        bounced = true;
+      }
+
+      if (bounced) {
+        bouncer.style.color = getRandomColor();
+      }
+
+      bouncer.style.left = x + 'px';
+      bouncer.style.top = y + 'px';
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    // 濁点クリック判定
+    const boSpan = document.getElementById('bo');
+
+    bouncer.addEventListener('click', (e) => {
+      const boRect = boSpan.getBoundingClientRect();
+      const relativeX = (e.clientX - boRect.left) / boRect.width;
+      const relativeY = (e.clientY - boRect.top) / boRect.height;
+
+      // 濁点は右上あたり（x: 0.6~1.0, y: 0.0~0.4）
+      const isDakuten = relativeX >= 0.6 && relativeX <= 1.0 && relativeY >= 0.0 && relativeY <= 0.4;
+
+      if (isDakuten) {
+        // window.location.href = 'リンク先URL';
+      }
+    });
+  </script>
+</body>
+</html>
